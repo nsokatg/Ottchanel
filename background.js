@@ -1,29 +1,29 @@
 const TARGET_FILENAME = "tv-app.html";
 
-// 1. tv-app.html を開いているタブだけ iframe の表示制限（X-Frame-Options等）を解除
 async function updateFrameRules() {
   const tabs = await chrome.tabs.query({});
   const tvTabIds = tabs
-    .filter(tab => tab.url && tab.url.includes(TARGET_FILENAME))
+    .filter(tab => tab.url && decodeURIComponent(tab.url).includes(TARGET_FILENAME))
     .map(tab => tab.id);
 
   const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
   const removeRuleIds = existingRules.map(rule => rule.id);
 
   const addRules = tvTabIds.length > 0 ? [{
-    id: 1,
+    id: 1001,
     priority: 1,
     action: {
       type: "modifyHeaders",
       responseHeaders: [
         { header: "x-frame-options", operation: "remove" },
         { header: "content-security-policy", operation: "remove" },
-        { header: "frame-options", operation: "remove" }
+        { header: "content-security-policy-report-only", operation: "remove" },
+        { header: "x-content-type-options", operation: "remove" }
       ]
     },
     condition: {
       tabIds: tvTabIds,
-      resourceTypes: ["sub_frame"]
+      resourceTypes: ["main_frame", "sub_frame"]
     }
   }] : [];
 
@@ -33,16 +33,23 @@ async function updateFrameRules() {
   });
 }
 
-chrome.tabs.onUpdated.addListener(updateFrameRules);
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.url || changeInfo.status === "loading") {
+    updateFrameRules();
+  }
+});
 chrome.tabs.onRemoved.addListener(updateFrameRules);
+chrome.runtime.onStartup.addListener(updateFrameRules);
+chrome.runtime.onInstalled.addListener(updateFrameRules);
 
-// 2. ミュート状態と音量制御のメッセージ受信
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!sender.tab) return;
   const tabId = sender.tab.id;
 
   if (message.type === "SET_MUTE") {
-    chrome.tabs.update(tabId, { muted: message.muted });
-    sendResponse({ status: "ok" });
+    chrome.tabs.update(tabId, { muted: message.muted }, () => {
+      sendResponse({ status: "ok" });
+    });
+    return true;
   }
 });
