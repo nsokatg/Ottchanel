@@ -1,9 +1,9 @@
-const TARGET_FILENAME = "tv-app.html";
+const TARGET_URL_PREFIX = "https://nsokatg.github.io/PersonalWebTV/";
 
 async function updateFrameRules() {
   const tabs = await chrome.tabs.query({});
   const tvTabIds = tabs
-    .filter(tab => tab.url && decodeURIComponent(tab.url).includes(TARGET_FILENAME))
+    .filter(tab => tab.url && (tab.url.startsWith(TARGET_URL_PREFIX) || decodeURIComponent(tab.url).includes("tv-app.html")))
     .map(tab => tab.id);
 
   const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
@@ -17,13 +17,12 @@ async function updateFrameRules() {
       responseHeaders: [
         { header: "x-frame-options", operation: "remove" },
         { header: "content-security-policy", operation: "remove" },
-        { header: "content-security-policy-report-only", operation: "remove" },
-        { header: "x-content-type-options", operation: "remove" }
+        { header: "content-security-policy-report-only", operation: "remove" }
       ]
     },
     condition: {
       tabIds: tvTabIds,
-      resourceTypes: ["main_frame", "sub_frame"]
+      resourceTypes: ["sub_frame"]
     }
   }] : [];
 
@@ -33,7 +32,7 @@ async function updateFrameRules() {
   });
 }
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.url || changeInfo.status === "loading") {
     updateFrameRules();
   }
