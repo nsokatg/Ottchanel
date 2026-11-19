@@ -84,6 +84,71 @@
     z-index: 10;
   }
 
+  /* 別タブ専用チャンネルの案内パネル */
+  .link-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    padding: 24px;
+    text-align: center;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 2px, transparent 2px 4px),
+      radial-gradient(ellipse at center, #1c2a22 0%, #0a0f0c 80%);
+  }
+
+  .link-panel.show { display: flex; }
+
+  .link-ch {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #00ff66;
+    text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
+  }
+
+  .link-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #eaeaea;
+    max-width: 90%;
+    overflow-wrap: anywhere;
+  }
+
+  .link-msg {
+    font-size: 0.95rem;
+    color: #9fb3a6;
+    line-height: 1.6;
+  }
+
+  .link-open-btn {
+    margin-top: 6px;
+    background: linear-gradient(180deg, #e67e22, #d35400);
+    color: #fff;
+    border: 1px solid #a04000;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #873600;
+  }
+
+  .link-open-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #873600; }
+  .link-open-btn:disabled { background: #555; border-color: #333; box-shadow: 0 4px 0 #222; cursor: not-allowed; }
+
+  .link-url {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.8rem;
+    color: #6f8577;
+    max-width: 90%;
+    overflow-wrap: anywhere;
+  }
+
   .osd-banner {
     position: absolute;
     top: 20px;
@@ -187,7 +252,6 @@
     box-shadow: 0 1px 0 #7f241b;
   }
 
-  /* チャンネル行（チャンネルボタン + 右横の別タブボタン） */
   .channel-grid {
     display: flex;
     flex-direction: column;
@@ -240,11 +304,21 @@
   }
 
   .ch-name {
+    flex: 1;
+    min-width: 0;
     font-size: 0.86rem;
     font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  /* 埋め込み(▶)／別タブ専用(↗)の目印 */
+  .ch-mode {
+    flex-shrink: 0;
+    margin-left: 6px;
+    font-size: 0.72rem;
+    opacity: 0.75;
   }
 
   .ext-tab-btn {
@@ -386,16 +460,23 @@
     padding: 24px;
     border-radius: 12px;
     width: 90%;
-    max-width: 650px;
+    max-width: 760px;
     max-height: 85vh;
     overflow-y: auto;
   }
 
   .modal-content h2 {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     font-size: 1.2rem;
     border-bottom: 1px solid #555;
     padding-bottom: 8px;
+  }
+
+  .modal-note {
+    font-size: 0.8rem;
+    color: #aaa;
+    line-height: 1.6;
+    margin-bottom: 14px;
   }
 
   .setting-row {
@@ -405,8 +486,8 @@
     align-items: center;
   }
 
-  .setting-row span { width: 45px; font-weight: bold; }
-  .setting-row input {
+  .setting-row span { width: 45px; font-weight: bold; flex-shrink: 0; }
+  .setting-row input, .setting-row select {
     background: #1a1a1a;
     border: 1px solid #555;
     color: #fff;
@@ -414,7 +495,19 @@
     border-radius: 4px;
   }
   .setting-row input.name-input { width: 150px; }
-  .setting-row input.url-input { flex: 1; }
+  .setting-row select.mode-select { width: 110px; }
+  .setting-row input.url-input { flex: 1; min-width: 0; }
+
+  .auto-open-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
+  .auto-open-row input { width: 16px; height: 16px; accent-color: #d35400; }
 
   .modal-actions {
     display: flex;
@@ -443,6 +536,13 @@
     <div class="screen-container">
       <div id="osdBanner" class="osd-banner">1CH</div>
       <div id="powerOffScreen" class="power-off-screen" style="display: none;">POWER OFF</div>
+      <div id="linkPanel" class="link-panel">
+        <div id="linkCh" class="link-ch"></div>
+        <div id="linkName" class="link-name"></div>
+        <div class="link-msg">このチャンネルは別タブで再生します。<br>下のボタンで開いてください。</div>
+        <button id="linkOpenBtn" class="link-open-btn">↗ 別タブで開く</button>
+        <div id="linkUrl" class="link-url"></div>
+      </div>
       <iframe id="tvFrame" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
     </div>
   </div>
@@ -451,7 +551,7 @@
     <div>
       <div class="brand-logo">PERSONAL TV</div>
       <div id="extStatus" class="ext-status">拡張機能: 未検出</div>
-      
+
       <div class="power-section">
         <div style="display:flex; align-items:center; gap:8px;">
           <div id="powerLed" class="led"></div>
@@ -480,7 +580,7 @@
         <button id="chDownBtn" class="sub-btn">CH ▼</button>
         <button id="chUpBtn" class="sub-btn">CH ▲</button>
       </div>
-      <button id="openSettingsBtn" class="settings-btn">⚙ チャンネルURL編集</button>
+      <button id="openSettingsBtn" class="settings-btn">⚙ チャンネル設定</button>
       <div class="speaker-grill"></div>
     </div>
   </div>
@@ -488,8 +588,16 @@
 
 <div id="settingsModal" class="modal-overlay">
   <div class="modal-content">
-    <h2>チャンネル設定（名称とURLの編集）</h2>
+    <h2>チャンネル設定（名称・表示方法・URLの編集）</h2>
+    <p class="modal-note">
+      「埋め込み」はテレビ画面の中に表示します。YouTubeやTVerなど多くのサイトは埋め込みを拒否するため、その場合は「別タブ」を選んでください。
+      （埋め込みに対応した例: YouTubeの /embed/ URL、Spotifyの /embed/ URL）
+    </p>
     <div id="settingsForm"></div>
+    <label class="auto-open-row">
+      <input type="checkbox" id="autoOpenCheck">
+      別タブ専用チャンネルを選んだとき、自動で別タブを開く
+    </label>
     <div class="modal-actions">
       <button id="resetBtn" class="reset-btn">初期値に戻す</button>
       <button id="cancelSettingsBtn" class="cancel-btn">キャンセル</button>
@@ -499,22 +607,53 @@
 </div>
 
 <script>
+  // mode: "embed" = テレビ画面内(iframe)に表示 / "link" = 別タブ専用
   const DEFAULT_CHANNELS = [
-    { ch: 1, name: "YouTube", url: "https://www.youtube.com/" },
-    { ch: 2, name: "radiko (ラジコ)", url: "https://radiko.jp/" },
-    { ch: 3, name: "らじる★らじる", url: "https://www.nhk.or.jp/radio/" },
-    { ch: 4, name: "TVer", url: "https://tver.jp/" },
-    { ch: 5, name: "ABEMA", url: "https://abema.tv/" },
-    { ch: 6, name: "ニコニコ動画", url: "https://www.nicovideo.jp/" },
-    { ch: 7, name: "NHKプラス", url: "https://plus.nhk.jp/" },
-    { ch: 8, name: "Spotify Web", url: "https://open.spotify.com/" }
+    { ch: 1, name: "YouTube", url: "https://www.youtube.com/", mode: "link" },
+    { ch: 2, name: "radiko (ラジコ)", url: "https://radiko.jp/", mode: "link" },
+    { ch: 3, name: "らじる★らじる", url: "https://www.nhk.or.jp/radio/", mode: "link" },
+    { ch: 4, name: "TVer", url: "https://tver.jp/", mode: "link" },
+    { ch: 5, name: "ABEMA", url: "https://abema.tv/", mode: "link" },
+    { ch: 6, name: "ニコニコ動画", url: "https://www.nicovideo.jp/", mode: "link" },
+    { ch: 7, name: "NHKプラス", url: "https://plus.nhk.jp/", mode: "link" },
+    { ch: 8, name: "Spotify Web", url: "https://open.spotify.com/", mode: "link" }
   ];
 
-  let channels = JSON.parse(localStorage.getItem("webTvChannels")) || DEFAULT_CHANNELS;
+  // 公式の埋め込みURLだけ embed、それ以外は link と推定（mode未設定の保存データ用）
+  function inferMode(url) {
+    return /youtube(-nocookie)?\.com\/embed|open\.spotify\.com\/embed|embed\.nicovideo\.jp/.test(url || "")
+      ? "embed" : "link";
+  }
+
+  function normalizeChannels(list) {
+    return list.map((c, i) => ({
+      ch: c.ch || i + 1,
+      name: c.name || `${i + 1}CH`,
+      url: c.url || "about:blank",
+      mode: c.mode === "embed" || c.mode === "link" ? c.mode : inferMode(c.url)
+    }));
+  }
+
+  function loadChannels() {
+    try {
+      const saved = JSON.parse(localStorage.getItem("webTvChannels"));
+      if (Array.isArray(saved) && saved.length) return normalizeChannels(saved);
+    } catch (_) {}
+    return normalizeChannels(DEFAULT_CHANNELS);
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, (c) => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+    ));
+  }
+
+  let channels = loadChannels();
   let currentChIndex = 0;
   let isPowerOn = true;
   let isMuted = false;
   let volume = parseInt(localStorage.getItem("webTvVolume") || "80", 10);
+  let autoOpen = localStorage.getItem("webTvAutoOpen") === "1"; // 初期値はOFF
   let osdTimeout;
 
   const tvFrame = document.getElementById("tvFrame");
@@ -526,6 +665,11 @@
   const volValue = document.getElementById("volValue");
   const muteBtn = document.getElementById("muteBtn");
   const extStatus = document.getElementById("extStatus");
+  const linkPanel = document.getElementById("linkPanel");
+  const linkCh = document.getElementById("linkCh");
+  const linkName = document.getElementById("linkName");
+  const linkUrl = document.getElementById("linkUrl");
+  const linkOpenBtn = document.getElementById("linkOpenBtn");
 
   window.addEventListener("message", (event) => {
     if (event.data && event.data.source === "PERSONAL_WEB_TV_EXT" && event.data.status === "READY") {
@@ -544,8 +688,12 @@
     }, "*");
   }
 
+  function isOpenableUrl(url) {
+    return !!url && url !== "about:blank";
+  }
+
   function openChannelInNewTab(url, name) {
-    if (!url || url === "about:blank") return;
+    if (!isOpenableUrl(url)) return;
     window.open(url, "_blank", "noopener,noreferrer");
     showOsd(`別タブ起動 : ${name}`);
   }
@@ -556,13 +704,16 @@
       const row = document.createElement("div");
       row.className = "ch-row";
 
+      const isEmbed = item.mode === "embed";
       const btn = document.createElement("button");
       btn.className = `ch-btn ${index === currentChIndex && isPowerOn ? "active" : ""}`;
+      btn.title = isEmbed ? "画面内に表示" : "別タブ専用";
       btn.innerHTML = `
         <span class="ch-num">${item.ch}</span>
-        <span class="ch-name">${item.name}</span>
+        <span class="ch-name">${escapeHtml(item.name)}</span>
+        <span class="ch-mode">${isEmbed ? "▶" : "↗"}</span>
       `;
-      btn.onclick = () => selectChannel(index);
+      btn.onclick = () => selectChannel(index, true);
 
       const extBtn = document.createElement("button");
       extBtn.className = "ext-tab-btn";
@@ -588,13 +739,40 @@
     }, 2500);
   }
 
-  function selectChannel(index) {
-    if (!isPowerOn) togglePower(true);
+  function showLinkPanel(target) {
+    linkCh.textContent = `${target.ch}CH`;
+    linkName.textContent = target.name;
+    const ok = isOpenableUrl(target.url);
+    linkUrl.textContent = ok ? target.url : "URLが未設定です（⚙ チャンネル設定で入力してください）";
+    linkOpenBtn.disabled = !ok;
+    linkOpenBtn.onclick = () => openChannelInNewTab(target.url, target.name);
+    linkPanel.classList.add("show");
+  }
+
+  function hideLinkPanel() {
+    linkPanel.classList.remove("show");
+  }
+
+  // userAction: クリックやキー操作による選択のときだけ true（ポップアップブロック対策）
+  function selectChannel(index, userAction = false) {
+    if (!isPowerOn) setPower(true);
     currentChIndex = index;
     const target = channels[index];
-    tvFrame.src = target.url;
+
+    if (target.mode === "embed") {
+      hideLinkPanel();
+      tvFrame.src = target.url;
+      showOsd(`${target.ch}CH : ${target.name}`);
+    } else {
+      tvFrame.src = "about:blank";
+      showLinkPanel(target);
+      if (userAction && autoOpen && isOpenableUrl(target.url)) {
+        openChannelInNewTab(target.url, target.name);
+      } else {
+        showOsd(`${target.ch}CH : ${target.name} (別タブ専用)`);
+      }
+    }
     renderChannelButtons();
-    showOsd(`${target.ch}CH : ${target.name}`);
   }
 
   function applyVolume() {
@@ -648,28 +826,32 @@
     applyVolume();
   };
 
-  function togglePower(forceState = null) {
-    isPowerOn = forceState !== null ? forceState : !isPowerOn;
+  function setPower(on) {
+    isPowerOn = on;
+    powerOffScreen.style.display = on ? "none" : "flex";
+    powerLed.classList.toggle("off", !on);
+  }
+
+  function togglePower() {
     if (isPowerOn) {
-      powerOffScreen.style.display = "none";
-      powerLed.classList.remove("off");
-      selectChannel(currentChIndex);
-    } else {
-      powerOffScreen.style.display = "flex";
-      powerLed.classList.add("off");
+      setPower(false);
       tvFrame.src = "about:blank";
+      hideLinkPanel();
       renderChannelButtons();
+    } else {
+      setPower(true);
+      selectChannel(currentChIndex, true);
     }
   }
 
   document.getElementById("powerBtn").onclick = () => togglePower();
-  document.getElementById("chUpBtn").onclick = () => selectChannel((currentChIndex + 1) % channels.length);
-  document.getElementById("chDownBtn").onclick = () => selectChannel((currentChIndex - 1 + channels.length) % channels.length);
+  document.getElementById("chUpBtn").onclick = () => selectChannel((currentChIndex + 1) % channels.length, true);
+  document.getElementById("chDownBtn").onclick = () => selectChannel((currentChIndex - 1 + channels.length) % channels.length, true);
 
   window.addEventListener("keydown", (e) => {
     if (document.getElementById("settingsModal").style.display === "flex") return;
     if (e.key >= "1" && e.key <= String(channels.length)) {
-      selectChannel(parseInt(e.key, 10) - 1);
+      selectChannel(parseInt(e.key, 10) - 1, true);
     } else if (e.key.toLowerCase() === "m") {
       isMuted = !isMuted;
       applyVolume();
@@ -678,6 +860,7 @@
 
   const settingsModal = document.getElementById("settingsModal");
   const settingsForm = document.getElementById("settingsForm");
+  const autoOpenCheck = document.getElementById("autoOpenCheck");
 
   document.getElementById("openSettingsBtn").onclick = () => {
     settingsForm.innerHTML = "";
@@ -686,11 +869,16 @@
       row.className = "setting-row";
       row.innerHTML = `
         <span>${item.ch}CH</span>
-        <input type="text" class="name-input" data-idx="${idx}" value="${item.name}" placeholder="チャンネル名">
-        <input type="text" class="url-input" data-idx="${idx}" value="${item.url}" placeholder="https://...">
+        <input type="text" class="name-input" data-idx="${idx}" value="${escapeHtml(item.name)}" placeholder="チャンネル名">
+        <select class="mode-select" data-idx="${idx}">
+          <option value="link"${item.mode === "link" ? " selected" : ""}>別タブ</option>
+          <option value="embed"${item.mode === "embed" ? " selected" : ""}>埋め込み</option>
+        </select>
+        <input type="text" class="url-input" data-idx="${idx}" value="${escapeHtml(item.url)}" placeholder="https://...">
       `;
       settingsForm.appendChild(row);
     });
+    autoOpenCheck.checked = autoOpen;
     settingsModal.style.display = "flex";
   };
 
@@ -699,20 +887,26 @@
   document.getElementById("saveSettingsBtn").onclick = () => {
     const nameInputs = document.querySelectorAll(".name-input");
     const urlInputs = document.querySelectorAll(".url-input");
+    const modeSelects = document.querySelectorAll(".mode-select");
     channels = channels.map((item, idx) => ({
       ch: item.ch,
       name: nameInputs[idx].value || `${item.ch}CH`,
-      url: urlInputs[idx].value || "about:blank"
+      url: urlInputs[idx].value || "about:blank",
+      mode: modeSelects[idx].value
     }));
+    autoOpen = autoOpenCheck.checked;
     localStorage.setItem("webTvChannels", JSON.stringify(channels));
+    localStorage.setItem("webTvAutoOpen", autoOpen ? "1" : "0");
     settingsModal.style.display = "none";
     selectChannel(currentChIndex);
   };
 
   document.getElementById("resetBtn").onclick = () => {
     if (confirm("チャンネル設定を初期状態に戻しますか？")) {
-      channels = JSON.parse(JSON.stringify(DEFAULT_CHANNELS));
+      channels = normalizeChannels(DEFAULT_CHANNELS);
+      autoOpen = false;
       localStorage.removeItem("webTvChannels");
+      localStorage.removeItem("webTvAutoOpen");
       settingsModal.style.display = "none";
       selectChannel(0);
     }
