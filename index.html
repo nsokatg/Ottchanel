@@ -38,7 +38,7 @@
     border-radius: 24px;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.2);
     width: 100%;
-    max-width: 1340px;
+    max-width: 1360px;
     height: 86vh;
     min-height: 580px;
     gap: 20px;
@@ -107,10 +107,10 @@
   }
 
   .control-panel {
-    width: 260px;
+    width: 285px;
     background: linear-gradient(180deg, #e0e0dc, #b8b8b2);
     border-radius: 16px;
-    padding: 16px 14px;
+    padding: 16px 12px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -187,6 +187,7 @@
     box-shadow: 0 1px 0 #7f241b;
   }
 
+  /* チャンネル行（チャンネルボタン + 右横の別タブボタン） */
   .channel-grid {
     display: flex;
     flex-direction: column;
@@ -196,14 +197,22 @@
     padding-right: 2px;
   }
 
+  .ch-row {
+    display: flex;
+    align-items: stretch;
+    gap: 5px;
+  }
+
   .ch-btn {
+    flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     background: linear-gradient(180deg, #444, #2a2a2a);
     color: #eee;
     border: 1px solid #111;
     border-radius: 8px;
-    padding: 8px 10px;
+    padding: 8px 9px;
     cursor: pointer;
     text-align: left;
     box-shadow: 0 3px 0 #111;
@@ -222,19 +231,46 @@
   .ch-num {
     font-family: "Courier New", Courier, monospace;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 0.98rem;
     background: rgba(0, 0, 0, 0.4);
     padding: 2px 6px;
     border-radius: 4px;
     margin-right: 8px;
+    flex-shrink: 0;
   }
 
   .ch-name {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .ext-tab-btn {
+    width: 36px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, #3498db, #2471a3);
+    color: #fff;
+    border: 1px solid #1b4f72;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 0 #154360;
+    transition: all 0.1s;
+  }
+
+  .ext-tab-btn:hover {
+    background: linear-gradient(180deg, #5dade2, #2e86c1);
+  }
+
+  .ext-tab-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #154360;
   }
 
   .volume-section {
@@ -491,7 +527,6 @@
   const muteBtn = document.getElementById("muteBtn");
   const extStatus = document.getElementById("extStatus");
 
-  // 拡張機能からの起動通知受信
   window.addEventListener("message", (event) => {
     if (event.data && event.data.source === "PERSONAL_WEB_TV_EXT" && event.data.status === "READY") {
       extStatus.textContent = "専用拡張機能: 自動有効中";
@@ -500,7 +535,6 @@
     }
   });
 
-  // 拡張機能へ音量・ミュート状態を送信
   function syncExtensionVolume() {
     window.postMessage({
       source: "PERSONAL_WEB_TV",
@@ -510,9 +544,18 @@
     }, "*");
   }
 
+  function openChannelInNewTab(url, name) {
+    if (!url || url === "about:blank") return;
+    window.open(url, "_blank", "noopener,noreferrer");
+    showOsd(`別タブ起動 : ${name}`);
+  }
+
   function renderChannelButtons() {
     channelGrid.innerHTML = "";
     channels.forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "ch-row";
+
       const btn = document.createElement("button");
       btn.className = `ch-btn ${index === currentChIndex && isPowerOn ? "active" : ""}`;
       btn.innerHTML = `
@@ -520,7 +563,19 @@
         <span class="ch-name">${item.name}</span>
       `;
       btn.onclick = () => selectChannel(index);
-      channelGrid.appendChild(btn);
+
+      const extBtn = document.createElement("button");
+      extBtn.className = "ext-tab-btn";
+      extBtn.title = `${item.name} を別タブで開く`;
+      extBtn.textContent = "↗";
+      extBtn.onclick = (e) => {
+        e.stopPropagation();
+        openChannelInNewTab(item.url, item.name);
+      };
+
+      row.appendChild(btn);
+      row.appendChild(extBtn);
+      channelGrid.appendChild(row);
     });
   }
 
@@ -546,11 +601,8 @@
     volSlider.value = volume;
     volValue.textContent = isMuted ? "MUTE" : volume;
     localStorage.setItem("webTvVolume", volume);
-
-    // 拡張機能（タブ全体のミュート制御）へ連携
     syncExtensionVolume();
 
-    // iframe内部への直接音量指令
     try {
       tvFrame.contentWindow.postMessage(JSON.stringify({
         event: "command",
