@@ -1,12 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Personal Web TV Controller",
-  "version": "2.0",
-  "description": "tv-app.html専用のiframe制限解除およびマスター音量制御拡張機能",
+  "version": "2.2",
+  "description": "PersonalWebTV専用のiframe制限解除およびマスター音量制御拡張機能",
   "permissions": [
     "declarativeNetRequest",
-    "tabs",
-    "tabCapture"
+    "tabs"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -16,7 +15,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["file:///*tv-app.html*", "http://*/*tv-app.html*", "https://*/*tv-app.html*"],
+      "matches": ["https://nsokatg.github.io/PersonalWebTV/*", "file:///*tv-app.html*"],
       "js": ["content.js"],
       "run_at": "document_start"
     }
