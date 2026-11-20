@@ -4,7 +4,7 @@
 <link rel="apple-touch-icon" href="/Ottchanel/icon.png"> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OTTchanel</title>
+<title>Ottchanel</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
@@ -283,7 +283,7 @@
 <div class="remote">
   <div class="ir-window"></div>
   <div id="lcd" class="lcd">ボタンを押すとチャンネルが開きます</div>
-  <div class="brand">OTTchanel</div>
+  <div class="brand">OTTCHANEL</div>
 
   <!-- 2×2 独立カテゴリボタン -->
   <div id="directPad" class="direct-pad"></div>
@@ -356,16 +356,14 @@
   ];
 
   const DEFAULT_CHANNELS = [
-     { id: "c1", name: "YouTube", url: "https://www.youtube.com/" },
-　　 { id: "c2", name: "Amazon Prime Video", url: "https://www.amazon.co.jp/gp/video/storefront" },
- 　　{ id: "c3", name: "Netflix", url: "https://www.netflix.com/browse" },
- 　　{ id: "c4", name: "TVer", url: "https://tver.jp/" },
- 　　{ id: "c5", name: "NHKプラス", url: "https://plus.nhk.jp/" },
- 　　{ id: "c6", name: "ABEMA", url: "https://abema.tv/" },
- 　　{ id: "c7", name: "ニコニコ動画", url: "https://www.nicovideo.jp/" },
- 　　{ id: "c8", name: "radiko (ラジコ)", url: "https://radiko.jp/" },
- 　　{ id: "c9", name: "らじる★らじる", url: "https://www.nhk.or.jp/radio/" },
- 　　{ id: "c10", name: "Spotify Web", url: "https://open.spotify.com/" }
+    { id: "c1", name: "YouTube", url: "https://www.youtube.com/" },
+    { id: "c2", name: "radiko (ラジコ)", url: "https://radiko.jp/" },
+    { id: "c3", name: "らじる★らじる", url: "https://www.nhk.or.jp/radio/" },
+    { id: "c4", name: "TVer", url: "https://tver.jp/" },
+    { id: "c5", name: "ABEMA", url: "https://abema.tv/" },
+    { id: "c6", name: "ニコニコ動画", url: "https://www.nicovideo.jp/" },
+    { id: "c7", name: "NHKプラス", url: "https://plus.nhk.jp/" },
+    { id: "c8", name: "Spotify Web", url: "https://open.spotify.com/" }
   ];
 
   function cleanUrl(value) {
@@ -484,72 +482,68 @@
   }
 
   function openInSharedTab(id, label, url) {
+    const isSameAlive = sharedTab.activeId === id && isSharedTabAlive() && !sharedTab.severed;
+    if (isSameAlive) {
+      try {
+        sharedTab.w.focus();
+        setLcd(`${label}\n共有タブを表示中`);
+        renderAllKeys();
+        return;
+      } catch (_) {}
+    }
+
     let w = null;
-    try { w = window.open("", SHARED_WINDOW_NAME); } catch (_) {}
+    try {
+      w = window.open(url, SHARED_WINDOW_NAME);
+    } catch (_) {}
+
     if (!w) {
       setLcd("ポップアップがブロックされました\n許可してください");
       renderAllKeys();
       return;
     }
 
-    let isBlank = false;
-    try {
-      isBlank = w.location.href === "about:blank";
-    } catch (_) {
-      isBlank = false;
-    }
-
-    const wasSameItem = sharedTab.activeId === id && !isBlank;
+    const isSwitch = sharedTab.activeId !== null && sharedTab.activeId !== id && isSharedTabAlive();
     sharedTab = {
       w,
       activeId: id,
-      at: isBlank ? Date.now() : (sharedTab.at || Date.now()),
+      at: Date.now(),
       severed: false
     };
-
-    if (isBlank) {
-      w.location.href = url;
-      setLcd(`${label}\n共有タブで開きました`);
-    } else if (wasSameItem) {
-      try { w.focus(); } catch (_) {}
-      setLcd(`${label}\n共有タブを表示中`);
-    } else {
-      try { w.location.href = url; } catch (_) {}
-      try { w.focus(); } catch (_) {}
-      setLcd(`${label}\n共有タブを切り替えました`);
-    }
+    try { w.focus(); } catch (_) {}
+    setLcd(isSwitch ? `${label}\n共有タブを切り替えました` : `${label}\n共有タブで開きました`);
     renderAllKeys();
   }
 
   function openInIndividualTab(id, label, url) {
     const prev = tabState(id);
+    const existing = openedTabs[id];
+
+    if (existing && existing.w && !existing.w.closed && !existing.severed) {
+      try {
+        existing.w.focus();
+        setLcd(`${label}\n開いているタブに移動`);
+        renderAllKeys();
+        return;
+      } catch (_) {}
+    }
+
     let w = null;
-    try { w = window.open("", "webremote_" + id); } catch (_) {}
+    try {
+      w = window.open(url, "webremote_" + id);
+    } catch (_) {}
+
     if (!w) {
       setLcd("ポップアップがブロックされました\n許可してください");
       renderAllKeys();
       return;
     }
 
-    let isBlank = false;
-    try {
-      isBlank = w.location.href === "about:blank";
-    } catch (_) {
-      isBlank = false;
-    }
-
-    if (isBlank) {
-      openedTabs[id] = { w, at: Date.now(), severed: false };
-      w.location.href = url;
-      setLcd(prev === "unknown"
-        ? `${label}\n新しいタブで開きました\n(前のタブは確認できません)`
-        : `${label}\n別タブで開きました`);
-    } else {
-      const old = openedTabs[id];
-      openedTabs[id] = { w, at: old ? old.at : 0, severed: false };
-      try { w.focus(); } catch (_) {}
-      setLcd(`${label}\n開いているタブに移動`);
-    }
+    openedTabs[id] = { w, at: Date.now(), severed: false };
+    try { w.focus(); } catch (_) {}
+    setLcd(prev === "unknown"
+      ? `${label}\n新しいタブで開きました\n(前のタブは確認できません)`
+      : `${label}\n別タブで開きました`);
     renderAllKeys();
   }
 
