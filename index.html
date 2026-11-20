@@ -24,11 +24,11 @@
   .remote {
     width: 100%;
     max-width: 340px;
-    height: min(100%, 780px);
+    height: min(100%, 820px);
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 20px 18px 26px;
+    gap: 12px;
+    padding: 18px 18px 24px;
     background:
       radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.07), transparent 60%),
       linear-gradient(170deg, #36373c 0%, #222327 55%, #19191c 100%);
@@ -51,15 +51,15 @@
 
   /* 送信状況の表示窓 */
   .lcd {
-    min-height: 48px;
+    min-height: 46px;
     padding: 7px 12px;
     border-radius: 10px;
     background: #a3b89d;
     color: #1d2a1b;
     font-family: "Courier New", Courier, monospace;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: bold;
-    line-height: 1.45;
+    line-height: 1.4;
     white-space: pre-line;
     display: flex;
     align-items: center;
@@ -74,6 +74,61 @@
     color: #85858c;
   }
 
+  /* 独立ボタンエリア（2×2） */
+  .direct-pad {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.28);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .direct-key {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    min-height: 50px;
+    padding: 7px 10px;
+    border: none;
+    border-radius: 13px;
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: transform 0.08s, box-shadow 0.08s, filter 0.1s;
+  }
+
+  .direct-key:hover { filter: brightness(1.1); }
+  .direct-key:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.75); }
+  .direct-key.empty { opacity: 0.45; }
+  .direct-key.last { outline: 2px solid #fff; outline-offset: -2px; }
+
+  .direct-key.cat-work  { background: linear-gradient(180deg, #2d6a9f, #1e4970); }
+  .direct-key.cat-sleep { background: linear-gradient(180deg, #5e4b8b, #3e3160); }
+  .direct-key.cat-sport { background: linear-gradient(180deg, #c05621, #8c3b14); }
+  .direct-key.cat-cam   { background: linear-gradient(180deg, #287a5e, #1a5440); }
+
+  .direct-cat {
+    font-size: 0.62rem;
+    font-weight: bold;
+    opacity: 0.85;
+    letter-spacing: 0.04em;
+  }
+
+  .direct-name {
+    max-width: calc(100% - 12px);
+    font-size: 0.78rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   /* チャンネルキー */
   .keypad {
     flex: 1;
@@ -82,8 +137,8 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: min-content;
-    gap: 10px;
-    padding: 3px 3px 8px;
+    gap: 9px;
+    padding: 2px 3px 6px;
   }
 
   .key {
@@ -93,10 +148,10 @@
     align-items: center;
     justify-content: center;
     gap: 3px;
-    min-height: 66px;
-    padding: 10px 8px;
+    min-height: 60px;
+    padding: 8px 8px;
     border: none;
-    border-radius: 20px;
+    border-radius: 18px;
     background: linear-gradient(180deg, #4b4c52, #333438);
     color: #f1f1f1;
     cursor: pointer;
@@ -106,13 +161,13 @@
 
   .key:hover { background: linear-gradient(180deg, #5a5b62, #3a3b40); }
   .key:active { transform: translateY(3px); box-shadow: 0 1px 0 #0d0d0f; }
-  .key:focus-visible, .rocker button:focus-visible, .tool-btn:focus-visible { outline: 2px solid #4aa3ff; outline-offset: 2px; }
+  .key:focus-visible, .direct-key:focus-visible, .rocker button:focus-visible, .tool-btn:focus-visible { outline: 2px solid #4aa3ff; outline-offset: 2px; }
   .key.empty { opacity: 0.4; }
   .key.last { background: linear-gradient(180deg, #ee8a2c, #c75a12); box-shadow: 0 4px 0 #7a3608, inset 0 1px 0 rgba(255, 255, 255, 0.25); }
 
   .key-num {
     font-family: "Courier New", Courier, monospace;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: bold;
     line-height: 1;
   }
@@ -130,15 +185,15 @@
   /* タブが開いている目印 */
   .key-dot {
     position: absolute;
-    top: 9px;
-    right: 12px;
-    width: 8px;
-    height: 8px;
+    top: 8px;
+    right: 10px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: transparent;
   }
-  .key.is-open .key-dot { background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
-  .key.is-unknown .key-dot { background: #f1c40f; box-shadow: 0 0 6px #f1c40f; }
+  .key.is-open .key-dot, .direct-key.is-open .key-dot { background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
+  .key.is-unknown .key-dot, .direct-key.is-unknown .key-dot { background: #f1c40f; box-shadow: 0 0 6px #f1c40f; }
 
   /* チャンネル上下（シーソー型） */
   .rocker {
@@ -151,7 +206,7 @@
   }
   .rocker button {
     flex: 1;
-    padding: 14px 0;
+    padding: 12px 0;
     border: none;
     background: transparent;
     color: #fff;
@@ -173,7 +228,7 @@
     border-right: 1px solid rgba(0, 0, 0, 0.45);
   }
 
-  .tools { display: flex; gap: 8px; }
+  .tools { display: flex; gap: 6px; }
   .tool-btn {
     flex: 1;
     padding: 9px 6px;
@@ -181,11 +236,17 @@
     border-radius: 12px;
     background: #2a2b2f;
     color: #b0b0b7;
-    font-size: 0.76rem;
+    font-size: 0.72rem;
     cursor: pointer;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
   }
   .tool-btn:hover { background: #36373c; color: #fff; }
+  .tool-btn.shared-on {
+    background: #23382c;
+    color: #7ee2a8;
+    box-shadow: inset 0 0 0 1px rgba(46, 204, 113, 0.35);
+  }
 
   .modal-overlay {
     display: none;
@@ -208,10 +269,25 @@
     overflow-y: auto;
   }
 
-  .modal-content h2 { margin-bottom: 14px; font-size: 1.1rem; border-bottom: 1px solid #555; padding-bottom: 8px; }
+  .modal-content h2 { margin-bottom: 12px; font-size: 1.05rem; border-bottom: 1px solid #555; padding-bottom: 6px; }
+  .modal-section-title {
+    margin: 14px 0 8px;
+    font-size: 0.88rem;
+    color: #9fd3ff;
+    font-weight: bold;
+  }
 
   .setting-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; align-items: center; }
-  .setting-row span { width: 40px; font-weight: bold; flex-shrink: 0; }
+  .setting-row span { width: 42px; font-weight: bold; flex-shrink: 0; font-size: 0.85rem; }
+  .setting-row span.cat-badge {
+    width: auto;
+    min-width: 112px;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: #3d3d42;
+    font-size: 0.76rem;
+    color: #ddd;
+  }
   .setting-row input {
     background: #1a1a1a;
     border: 1px solid #555;
@@ -242,6 +318,10 @@
   <div id="lcd" class="lcd">ボタンを押すとチャンネルが開きます</div>
   <div class="brand">OTTCHANEL</div>
 
+  <!-- 2×2 独立カテゴリボタン -->
+  <div id="directPad" class="direct-pad"></div>
+
+  <!-- 通常チャンネルキー -->
   <div id="keypad" class="keypad"></div>
 
   <div class="rocker">
@@ -251,16 +331,23 @@
   </div>
 
   <div class="tools">
-    <button id="launchBtn" class="tool-btn">新しいウィンドウで開く</button>
+    <button id="modeBtn" class="tool-btn shared-on" title="視聴タブの開き方を切り替え">1タブ共有</button>
+    <button id="launchBtn" class="tool-btn">新ウィンドウ</button>
     <button id="openSettingsBtn" class="tool-btn">⚙ 設定</button>
   </div>
 </div>
 
 <div id="settingsModal" class="modal-overlay">
   <div class="modal-content">
-    <h2>チャンネル設定（名称とURLの編集）</h2>
+    <h2>リモコン設定（独立ボタン・チャンネルの編集）</h2>
+
+    <div class="modal-section-title">■ 独立ボタン（2×2 カテゴリ別ショートカット）</div>
+    <div id="directSettingsForm"></div>
+
+    <div class="modal-section-title">■ チャンネルボタン（1CH〜）</div>
     <div id="settingsForm"></div>
     <button type="button" id="addChannelBtn" class="add-btn">＋ チャンネルを追加</button>
+
     <div class="modal-actions">
       <button id="resetBtn" class="reset-btn">初期値に戻す</button>
       <button id="cancelSettingsBtn" class="cancel-btn">キャンセル</button>
@@ -270,9 +357,42 @@
 </div>
 
 <script>
-  // 保存キーは以前のバージョンと同じ（チャンネル設定を引き継ぐため）
   const STORAGE_KEY = "webTvChannels";
+  const DIRECT_STORAGE_KEY = "webTvDirectButtons";
+  const MODE_STORAGE_KEY = "webTvSingleTabMode";
+  const SHARED_WINDOW_NAME = "webremote_shared_viewer";
   const DEFAULT_LCD = "ボタンを押すとチャンネルが開きます";
+
+  const DEFAULT_DIRECT_BUTTONS = [
+    {
+      id: "d_work",
+      category: "仕事・集中BGM",
+      cssClass: "cat-work",
+      name: "環境音ミックス",
+      url: "https://asoftmurmur.com/"
+    },
+    {
+      id: "d_sleep",
+      category: "睡眠・リラックス",
+      cssClass: "cat-sleep",
+      name: "雨音リラックス",
+      url: "https://rainymood.com/"
+    },
+    {
+      id: "d_sport",
+      category: "運動・気分転換",
+      cssClass: "cat-sport",
+      name: "Radio Garden",
+      url: "https://radio.garden/"
+    },
+    {
+      id: "d_cam",
+      category: "定点カメラ・風景",
+      cssClass: "cat-cam",
+      name: "EarthCam ライブ",
+      url: "https://www.earthcam.com/"
+    }
+  ];
 
   const DEFAULT_CHANNELS = [
     { id: "c1", name: "YouTube", url: "https://www.youtube.com/" },
@@ -285,7 +405,6 @@
     { id: "c8", name: "Spotify Web", url: "https://open.spotify.com/" }
   ];
 
-  // http/https のみ許可。スキーム省略時は https:// を補う。不正・空なら ""
   function cleanUrl(value) {
     let v = String(value || "").trim();
     if (!v) return "";
@@ -302,7 +421,6 @@
     return "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
   }
 
-  // 各チャンネルに固有のidを持たせる（番号は並び順から自動で振る）
   function normalizeChannels(list) {
     const seen = new Set();
     return list.map((c, i) => {
@@ -311,6 +429,27 @@
       seen.add(id);
       return { id, name: c.name || `${i + 1}CH`, url: cleanUrl(c.url) };
     });
+  }
+
+  function loadSingleTabMode() {
+    const saved = localStorage.getItem(MODE_STORAGE_KEY);
+    return saved === null ? true : saved === "true";
+  }
+
+  function loadDirectButtons() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(DIRECT_STORAGE_KEY));
+      if (Array.isArray(saved) && saved.length === DEFAULT_DIRECT_BUTTONS.length) {
+        return DEFAULT_DIRECT_BUTTONS.map((def, idx) => ({
+          id: def.id,
+          category: def.category,
+          cssClass: def.cssClass,
+          name: (saved[idx] && saved[idx].name) ? String(saved[idx].name) : def.name,
+          url: saved[idx] && "url" in saved[idx] ? cleanUrl(saved[idx].url) : def.url
+        }));
+      }
+    } catch (_) {}
+    return DEFAULT_DIRECT_BUTTONS.map((d) => ({ ...d }));
   }
 
   function loadChannels() {
@@ -327,23 +466,48 @@
     ));
   }
 
+  let isSingleTabMode = loadSingleTabMode();
+  let directButtons = loadDirectButtons();
   let channels = loadChannels();
   let currentId = null;
-  const openedTabs = {}; // id -> { w: 開いたタブへの参照, at: 開いた時刻, severed: 参照が切れたか }
+  let sharedTab = { w: null, activeId: null, at: 0, severed: false };
+  const openedTabs = {};
 
+  const directPad = document.getElementById("directPad");
   const keypad = document.getElementById("keypad");
   const lcd = document.getElementById("lcd");
+  const modeBtn = document.getElementById("modeBtn");
   const settingsModal = document.getElementById("settingsModal");
+  const directSettingsForm = document.getElementById("directSettingsForm");
   const settingsForm = document.getElementById("settingsForm");
 
   function setLcd(text) { lcd.textContent = text; }
 
   function currentIndex() { return channels.findIndex((c) => c.id === currentId); }
 
-  // "open": タブが開いている / "unknown": 開いたが状態を確認できない / "none": 開いていない
-  // YouTubeなど一部のサイトは、開いたタブとこのページの関連付けを切るため、
-  // 開いた直後に参照が「閉じた」扱いになる。その場合は "unknown" として扱う
+  function syncModeButton() {
+    modeBtn.textContent = isSingleTabMode ? "1タブ共有" : "個別タブ";
+    modeBtn.classList.toggle("shared-on", isSingleTabMode);
+  }
+
+  function isSharedTabAlive() {
+    if (!sharedTab.w) return false;
+    if (!sharedTab.w.closed) return true;
+    if (sharedTab.severed) return true;
+    if (Date.now() - sharedTab.at < 10000) {
+      sharedTab.severed = true;
+      return true;
+    }
+    return false;
+  }
+
   function tabState(id) {
+    if (isSingleTabMode) {
+      if (sharedTab.activeId === id && isSharedTabAlive()) {
+        return sharedTab.severed ? "unknown" : "open";
+      }
+      return "none";
+    }
     const o = openedTabs[id];
     if (!o) return "none";
     if (!o.w.closed) return "open";
@@ -356,6 +520,119 @@
     const s = tabState(id);
     btn.classList.toggle("is-open", s === "open");
     btn.classList.toggle("is-unknown", s === "unknown");
+  }
+
+  function openInSharedTab(id, label, url) {
+    let w = null;
+    try { w = window.open("", SHARED_WINDOW_NAME); } catch (_) {}
+    if (!w) {
+      setLcd("ポップアップがブロックされました\n許可してください");
+      renderAllKeys();
+      return;
+    }
+
+    let isBlank = false;
+    try {
+      isBlank = w.location.href === "about:blank";
+    } catch (_) {
+      isBlank = false;
+    }
+
+    const wasSameItem = sharedTab.activeId === id && !isBlank;
+    sharedTab = {
+      w,
+      activeId: id,
+      at: isBlank ? Date.now() : (sharedTab.at || Date.now()),
+      severed: false
+    };
+
+    if (isBlank) {
+      w.location.href = url;
+      setLcd(`${label}\n共有タブで開きました`);
+    } else if (wasSameItem) {
+      try { w.focus(); } catch (_) {}
+      setLcd(`${label}\n共有タブを表示中`);
+    } else {
+      try { w.location.href = url; } catch (_) {}
+      try { w.focus(); } catch (_) {}
+      setLcd(`${label}\n共有タブを切り替えました`);
+    }
+    renderAllKeys();
+  }
+
+  function openInIndividualTab(id, label, url) {
+    const prev = tabState(id);
+    let w = null;
+    try { w = window.open("", "webremote_" + id); } catch (_) {}
+    if (!w) {
+      setLcd("ポップアップがブロックされました\n許可してください");
+      renderAllKeys();
+      return;
+    }
+
+    let isBlank = false;
+    try {
+      isBlank = w.location.href === "about:blank";
+    } catch (_) {
+      isBlank = false;
+    }
+
+    if (isBlank) {
+      openedTabs[id] = { w, at: Date.now(), severed: false };
+      w.location.href = url;
+      setLcd(prev === "unknown"
+        ? `${label}\n新しいタブで開きました\n(前のタブは確認できません)`
+        : `${label}\n別タブで開きました`);
+    } else {
+      const old = openedTabs[id];
+      openedTabs[id] = { w, at: old ? old.at : 0, severed: false };
+      try { w.focus(); } catch (_) {}
+      setLcd(`${label}\n開いているタブに移動`);
+    }
+    renderAllKeys();
+  }
+
+  function openTargetTab(id, label, url) {
+    currentId = id;
+    if (!url) {
+      setLcd(`${label}\nURLが未設定です`);
+      renderAllKeys();
+      return;
+    }
+    if (isSingleTabMode) {
+      openInSharedTab(id, label, url);
+    } else {
+      openInIndividualTab(id, label, url);
+    }
+  }
+
+  modeBtn.onclick = () => {
+    isSingleTabMode = !isSingleTabMode;
+    localStorage.setItem(MODE_STORAGE_KEY, String(isSingleTabMode));
+    syncModeButton();
+    renderAllKeys();
+    setLcd(isSingleTabMode
+      ? "1タブ共有モードに切替\n視聴タブを1つにまとめます"
+      : "個別タブモードに切替\nチャンネルごとにタブを分けます");
+  };
+
+  function renderDirectKeys() {
+    directPad.innerHTML = "";
+    directButtons.forEach((item) => {
+      const btn = document.createElement("button");
+      btn.className = `direct-key ${item.cssClass}`
+        + (item.id === currentId ? " last" : "")
+        + (item.url ? "" : " empty");
+      btn.title = item.url ? `${item.category}: ${item.name}` : `${item.category}: URL未設定`;
+      btn.innerHTML = `
+        <span class="key-dot"></span>
+        <span class="direct-cat">${escapeHtml(item.category)}</span>
+        <span class="direct-name">${escapeHtml(item.name)}</span>
+      `;
+      btn.onclick = () => openTargetTab(item.id, `[${item.category}] ${item.name}`, item.url);
+      applyLamp(btn, item.id);
+      directPad.appendChild(btn);
+    });
   }
 
   function renderKeys() {
@@ -377,49 +654,14 @@
     });
   }
 
-  // 開いているタブがあればそこへ移動、なければ新しいタブで開く
-  // ボタン・キー操作から呼ぶこと（ポップアップブロック対策）
+  function renderAllKeys() {
+    renderDirectKeys();
+    renderKeys();
+  }
+
   function openChannel(index) {
     const item = channels[index];
-    const label = `${index + 1}CH ${item.name}`;
-    currentId = item.id;
-    if (!item.url) {
-      setLcd(`${label}\nURLが未設定です`);
-      renderKeys();
-      return;
-    }
-
-    const prev = tabState(item.id);
-
-    // チャンネルごとの名前付きタブを探す。空URLなら既存タブは移動もリロードもされない
-    let w = null;
-    try { w = window.open("", "webremote_ch" + item.id); } catch (_) {}
-    if (!w) {
-      setLcd("ポップアップがブロックされました\n許可してください");
-      renderKeys();
-      return;
-    }
-
-    let isBlank = false;
-    try {
-      isBlank = w.location.href === "about:blank"; // 新しく作られた空のタブ
-    } catch (_) {
-      isBlank = false; // 参照できない = すでに外部サイトを表示中のタブ
-    }
-
-    if (isBlank) {
-      openedTabs[item.id] = { w, at: Date.now(), severed: false };
-      w.location.href = item.url;
-      setLcd(prev === "unknown"
-        ? `${label}\n新しいタブで開きました\n(前のタブは確認できません)`
-        : `${label}\n別タブで開きました`);
-    } else {
-      const old = openedTabs[item.id];
-      openedTabs[item.id] = { w, at: old ? old.at : 0, severed: false };
-      try { w.focus(); } catch (_) {}
-      setLcd(`${label}\n開いているタブに移動`);
-    }
-    renderKeys();
+    openTargetTab(item.id, `${index + 1}CH ${item.name}`, item.url);
   }
 
   document.getElementById("chUpBtn").onclick = () => {
@@ -439,16 +681,15 @@
     }
   });
 
-  // タブが閉じられたら目印を消す
   setInterval(() => {
+    directPad.querySelectorAll(".direct-key").forEach((btn, i) => {
+      if (directButtons[i]) applyLamp(btn, directButtons[i].id);
+    });
     keypad.querySelectorAll(".key").forEach((btn, i) => {
       if (channels[i]) applyLamp(btn, channels[i].id);
     });
   }, 1500);
 
-  // このリモコンを、タブ付きの新しいブラウザウィンドウで開く
-  // Shiftキーを押しながらリンクを開く動作を再現（Chrome / Edge / Firefox 向け）。
-  // 効かない環境では新しいタブで開くので、そのタブをウィンドウとして切り離して使う
   document.getElementById("launchBtn").onclick = () => {
     const a = document.createElement("a");
     a.href = location.href;
@@ -460,10 +701,16 @@
     setLcd("新しいウィンドウで開きます\n開いた先で操作してください");
   };
 
-  // ---- 設定画面（追加・削除・編集は「保存して適用」で確定） ----
+  // ---- 設定画面 ----
+  let directDraft = [];
   let draft = [];
 
   function readDraft() {
+    directSettingsForm.querySelectorAll(".setting-row").forEach((row, i) => {
+      if (!directDraft[i]) return;
+      directDraft[i].name = row.querySelector(".name-input").value;
+      directDraft[i].url = row.querySelector(".url-input").value;
+    });
     settingsForm.querySelectorAll(".setting-row").forEach((row, i) => {
       if (!draft[i]) return;
       draft[i].name = row.querySelector(".name-input").value;
@@ -472,6 +719,18 @@
   }
 
   function renderSettings() {
+    directSettingsForm.innerHTML = "";
+    directDraft.forEach((item) => {
+      const row = document.createElement("div");
+      row.className = "setting-row";
+      row.innerHTML = `
+        <span class="cat-badge">${escapeHtml(item.category)}</span>
+        <input type="text" class="name-input" value="${escapeHtml(item.name)}" placeholder="ボタン表示名">
+        <input type="text" class="url-input" value="${escapeHtml(item.url)}" placeholder="https://...">
+      `;
+      directSettingsForm.appendChild(row);
+    });
+
     settingsForm.innerHTML = "";
     draft.forEach((item, idx) => {
       const row = document.createElement("div");
@@ -492,6 +751,7 @@
   }
 
   document.getElementById("openSettingsBtn").onclick = () => {
+    directDraft = directButtons.map((d) => ({ ...d }));
     draft = channels.map((c) => ({ ...c }));
     renderSettings();
     settingsModal.style.display = "flex";
@@ -511,7 +771,12 @@
 
   document.getElementById("saveSettingsBtn").onclick = () => {
     readDraft();
-    // 名前もURLも空の行は追加されなかったものとして取り除く
+    const nextDirect = directDraft.map((d, idx) => ({
+      ...DEFAULT_DIRECT_BUTTONS[idx],
+      name: d.name.trim() || DEFAULT_DIRECT_BUTTONS[idx].name,
+      url: cleanUrl(d.url)
+    }));
+
     const next = draft
       .filter((c) => c.name.trim() || c.url.trim())
       .map((c, i) => ({ id: c.id, name: c.name.trim() || `${i + 1}CH`, url: cleanUrl(c.url) }));
@@ -519,24 +784,30 @@
       alert("チャンネルが1つもありません。1つ以上入力してください。");
       return;
     }
+
+    directButtons = nextDirect;
     channels = next;
+    localStorage.setItem(DIRECT_STORAGE_KEY, JSON.stringify(directButtons));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(channels));
     settingsModal.style.display = "none";
-    renderKeys();
+    renderAllKeys();
   };
 
   document.getElementById("resetBtn").onclick = () => {
-    if (confirm("チャンネル設定を初期状態に戻しますか？\n（追加したチャンネルは削除されます）")) {
+    if (confirm("独立ボタンとチャンネル設定をすべて初期状態に戻しますか？")) {
+      directButtons = DEFAULT_DIRECT_BUTTONS.map((d) => ({ ...d }));
       channels = normalizeChannels(DEFAULT_CHANNELS);
+      localStorage.removeItem(DIRECT_STORAGE_KEY);
       localStorage.removeItem(STORAGE_KEY);
       currentId = null;
       settingsModal.style.display = "none";
       setLcd(DEFAULT_LCD);
-      renderKeys();
+      renderAllKeys();
     }
   };
 
-  renderKeys();
+  syncModeButton();
+  renderAllKeys();
 </script>
 </body>
 </html>
