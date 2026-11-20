@@ -614,6 +614,26 @@
     renderKeys();
   }
 
+  function refreshOnResume() {
+    syncModeButton();
+    renderAllKeys();
+    requestAnimationFrame(() => {
+      const remoteEl = document.querySelector(".remote");
+      if (remoteEl) {
+        void remoteEl.offsetHeight;
+      }
+      renderAllKeys();
+    });
+  }
+
+  window.addEventListener("pageshow", refreshOnResume);
+  window.addEventListener("focus", refreshOnResume);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      refreshOnResume();
+    }
+  });
+
   function openChannel(index) {
     const item = channels[index];
     openTargetTab(item.id, `${index + 1}CH ${item.name}`, item.url);
