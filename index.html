@@ -1,274 +1,82 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<link rel="apple-touch-icon" href="/Ottchanel/icon.png"> 
+<link rel="apple-touch-icon" href="/Ottchanel/icon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ottchanel</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-
   html, body { height: 100%; }
-
-  body {
-    background: #17181b;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12px;
-    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-    color: #eee;
-  }
+  body { background: #17181b; display: flex; justify-content: center; align-items: center; padding: 12px; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; color: #eee; }
 
   /* リモコン本体 */
-  .remote {
-    width: 100%;
-    max-width: 340px;
-    height: min(100%, 800px);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 18px 18px 24px;
-    background:
-      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.07), transparent 60%),
-      linear-gradient(170deg, #36373c 0%, #222327 55%, #19191c 100%);
+  .remote { width: 100%; max-width: 340px; height: min(100%, 800px); display: flex; flex-direction: column; gap: 12px; padding: 18px 18px 24px;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.07), transparent 60%), linear-gradient(170deg, #36373c 0%, #222327 55%, #19191c 100%);
     border-radius: 44px 44px 56px 56px;
-    box-shadow:
-      0 24px 56px rgba(0, 0, 0, 0.7),
-      inset 0 2px 3px rgba(255, 255, 255, 0.14),
-      inset 0 -4px 8px rgba(0, 0, 0, 0.55);
-  }
+    box-shadow: 0 24px 56px rgba(0,0,0,0.7), inset 0 2px 3px rgba(255,255,255,0.14), inset 0 -4px 8px rgba(0,0,0,0.55); }
+  .ir-window { align-self: center; width: 96px; height: 10px; border-radius: 6px; background: linear-gradient(180deg, #5a1414, #260606); box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1); }
+  .lcd { min-height: 46px; padding: 7px 12px; border-radius: 10px; background: #a3b89d; color: #1d2a1b; font-family: "Courier New", Courier, monospace; font-size: 0.78rem; font-weight: bold; line-height: 1.4; white-space: pre-line; display: flex; align-items: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.08); }
+  .brand { text-align: center; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.3em; color: #85858c; }
 
-  /* 赤外線窓 */
-  .ir-window {
-    align-self: center;
-    width: 96px;
-    height: 10px;
-    border-radius: 6px;
-    background: linear-gradient(180deg, #5a1414, #260606);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-
-  /* 送信状況の表示窓 */
-  .lcd {
-    min-height: 46px;
-    padding: 7px 12px;
-    border-radius: 10px;
-    background: #a3b89d;
-    color: #1d2a1b;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 0.78rem;
-    font-weight: bold;
-    line-height: 1.4;
-    white-space: pre-line;
-    display: flex;
-    align-items: center;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-
-  .brand {
-    text-align: center;
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.3em;
-    color: #85858c;
-  }
-
-  /* 独立ボタンエリア（2×2） */
-  .direct-pad {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 8px;
-    border-radius: 18px;
-    background: rgba(0, 0, 0, 0.28);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-
-  .direct-key {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 2px;
-    min-height: 52px;
-    padding: 7px 10px;
-    border: none;
-    border-radius: 13px;
-    color: #fff;
-    cursor: pointer;
-    text-align: left;
-    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    transition: transform 0.08s, box-shadow 0.08s, filter 0.1s;
-  }
-
+  /* 独立ボタン（2×2） */
+  .direct-pad { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px; border-radius: 18px; background: rgba(0,0,0,0.28); box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.06); }
+  .direct-key { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; min-height: 52px; padding: 7px 10px; border: none; border-radius: 13px; color: #fff; cursor: pointer; text-align: left; box-shadow: 0 3px 0 rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.25); transition: transform 0.08s, box-shadow 0.08s, filter 0.1s; }
   .direct-key:hover { filter: brightness(1.1); }
-  .direct-key:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.75); }
+  .direct-key:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.75); }
   .direct-key.empty { opacity: 0.45; }
   .direct-key.last { outline: 2px solid #fff; outline-offset: -2px; }
-
   .direct-key.cat-work  { background: linear-gradient(180deg, #2d6a9f, #1e4970); }
   .direct-key.cat-sleep { background: linear-gradient(180deg, #5e4b8b, #3e3160); }
   .direct-key.cat-sport { background: linear-gradient(180deg, #c05621, #8c3b14); }
   .direct-key.cat-cam   { background: linear-gradient(180deg, #287a5e, #1a5440); }
+  .direct-cat { font-size: 0.62rem; font-weight: bold; opacity: 0.85; letter-spacing: 0.04em; max-width: calc(100% - 12px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .direct-name { max-width: calc(100% - 12px); font-size: 0.78rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  .direct-cat {
-    font-size: 0.62rem;
-    font-weight: bold;
-    opacity: 0.85;
-    letter-spacing: 0.04em;
-  }
-
-  .direct-name {
-    max-width: calc(100% - 12px);
-    font-size: 0.78rem;
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  /* カテゴリ切替（TV・ラジオ・オーディオ・お気に入り） */
+  .cat-pad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .cat-key { padding: 9px 2px; border: none; border-radius: 12px; background: linear-gradient(180deg, #3b3c42, #2a2b2f); color: #c9c9d0; font-size: 0.72rem; font-weight: bold; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 3px 0 #0d0d0f, inset 0 1px 0 rgba(255,255,255,0.12); }
+  .cat-key:active { transform: translateY(2px); box-shadow: 0 1px 0 #0d0d0f; }
+  .cat-key.active { background: linear-gradient(180deg, #4a90e2, #2f64a8); color: #fff; box-shadow: 0 3px 0 #1b3d66, inset 0 1px 0 rgba(255,255,255,0.3); }
 
   /* チャンネルキー */
-  .keypad {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: min-content;
-    gap: 10px;
-    padding: 2px 3px 6px;
-  }
-
-  .key {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    min-height: 64px;
-    padding: 9px 8px;
-    border: none;
-    border-radius: 18px;
-    background: linear-gradient(180deg, #4b4c52, #333438);
-    color: #f1f1f1;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #0d0d0f, inset 0 1px 0 rgba(255, 255, 255, 0.18);
-    transition: transform 0.08s, box-shadow 0.08s;
-  }
-
+  .keypad { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: min-content; gap: 10px; padding: 2px 3px 6px; }
+  .key { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 64px; padding: 9px 8px; border: none; border-radius: 18px; background: linear-gradient(180deg, #4b4c52, #333438); color: #f1f1f1; cursor: pointer; box-shadow: 0 4px 0 #0d0d0f, inset 0 1px 0 rgba(255,255,255,0.18); transition: transform 0.08s, box-shadow 0.08s; }
   .key:hover { background: linear-gradient(180deg, #5a5b62, #3a3b40); }
   .key:active { transform: translateY(3px); box-shadow: 0 1px 0 #0d0d0f; }
-  .key:focus-visible, .direct-key:focus-visible, .tool-btn:focus-visible { outline: 2px solid #4aa3ff; outline-offset: 2px; }
+  .key:focus-visible, .direct-key:focus-visible, .cat-key:focus-visible, .tool-btn:focus-visible { outline: 2px solid #4aa3ff; outline-offset: 2px; }
   .key.empty { opacity: 0.4; }
-  .key.last { background: linear-gradient(180deg, #ee8a2c, #c75a12); box-shadow: 0 4px 0 #7a3608, inset 0 1px 0 rgba(255, 255, 255, 0.25); }
-
-  .key-num {
-    font-family: "Courier New", Courier, monospace;
-    font-size: 1.45rem;
-    font-weight: bold;
-    line-height: 1;
-  }
-
-  .key-name {
-    max-width: 100%;
-    font-size: 0.72rem;
-    font-weight: bold;
-    opacity: 0.85;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  .key.last { background: linear-gradient(180deg, #ee8a2c, #c75a12); box-shadow: 0 4px 0 #7a3608, inset 0 1px 0 rgba(255,255,255,0.25); }
+  .key-num { font-family: "Courier New", Courier, monospace; font-size: 1.45rem; font-weight: bold; line-height: 1; }
+  .key-name { max-width: 100%; font-size: 0.72rem; font-weight: bold; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .empty-note { grid-column: 1 / -1; padding: 18px 8px; text-align: center; font-size: 0.76rem; line-height: 1.6; color: #8a8a92; white-space: pre-line; }
 
   /* タブが開いている目印 */
-  .key-dot {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: transparent;
-  }
+  .key-dot { position: absolute; top: 8px; right: 10px; width: 7px; height: 7px; border-radius: 50%; background: transparent; }
   .key.is-open .key-dot, .direct-key.is-open .key-dot { background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
   .key.is-unknown .key-dot, .direct-key.is-unknown .key-dot { background: #f1c40f; box-shadow: 0 0 6px #f1c40f; }
 
   .tools { display: flex; gap: 6px; }
-  .tool-btn {
-    flex: 1;
-    padding: 9px 6px;
-    border: none;
-    border-radius: 12px;
-    background: #2a2b2f;
-    color: #b0b0b7;
-    font-size: 0.72rem;
-    cursor: pointer;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    white-space: nowrap;
-  }
+  .tool-btn { flex: 1; padding: 9px 6px; border: none; border-radius: 12px; background: #2a2b2f; color: #b0b0b7; font-size: 0.72rem; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.08); white-space: nowrap; }
   .tool-btn:hover { background: #36373c; color: #fff; }
-  .tool-btn.shared-on {
-    background: #23382c;
-    color: #7ee2a8;
-    box-shadow: inset 0 0 0 1px rgba(46, 204, 113, 0.35);
-  }
+  .tool-btn.shared-on { background: #23382c; color: #7ee2a8; box-shadow: inset 0 0 0 1px rgba(46,204,113,0.35); }
 
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    padding: 12px;
-  }
-
-  .modal-content {
-    background: #2c2c2c;
-    padding: 20px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 650px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
+  /* 設定画面 */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 12px; }
+  .modal-content { background: #2c2c2c; padding: 20px; border-radius: 12px; width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto; }
   .modal-content h2 { margin-bottom: 12px; font-size: 1.05rem; border-bottom: 1px solid #555; padding-bottom: 6px; }
-  .modal-section-title {
-    margin: 14px 0 8px;
-    font-size: 0.88rem;
-    color: #9fd3ff;
-    font-weight: bold;
-  }
-
+  .modal-section-title { margin: 14px 0 8px; font-size: 0.88rem; color: #9fd3ff; font-weight: bold; }
   .setting-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; align-items: center; }
   .setting-row span { width: 42px; font-weight: bold; flex-shrink: 0; font-size: 0.85rem; }
-  .setting-row span.cat-badge {
-    width: auto;
-    min-width: 112px;
-    padding: 3px 7px;
-    border-radius: 4px;
-    background: #3d3d42;
-    font-size: 0.76rem;
-    color: #ddd;
-  }
-  .setting-row input {
-    background: #1a1a1a;
-    border: 1px solid #555;
-    color: #fff;
-    padding: 6px 10px;
-    border-radius: 4px;
-    user-select: text;
-  }
+  .setting-row input { background: #1a1a1a; border: 1px solid #555; color: #fff; padding: 6px 10px; border-radius: 4px; user-select: text; }
+  .setting-row input.cat-input { flex: 1; min-width: 110px; }
   .setting-row input.name-input { flex: 1; min-width: 120px; }
   .setting-row input.url-input { flex-basis: 100%; }
-
+  .set-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .set-tab { padding: 6px 12px; border: none; border-radius: 999px; background: #3d3d42; color: #ccc; font-size: 0.8rem; cursor: pointer; }
+  .set-tab.active { background: #4a90e2; color: #fff; font-weight: bold; }
   .del-btn { padding: 6px 10px; border: none; border-radius: 4px; background: #5a3a3a; color: #fff; font-size: 0.8rem; cursor: pointer; }
-  .del-btn:hover:not(:disabled) { background: #a04040; }
-  .del-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .del-btn:hover { background: #a04040; }
   .add-btn { width: 100%; margin-top: 4px; padding: 9px; border: 1px dashed #777; border-radius: 6px; background: transparent; color: #ccc; font-size: 0.9rem; cursor: pointer; }
   .add-btn:hover { background: #383838; color: #fff; }
   .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
@@ -277,64 +85,27 @@
   .reset-btn { background: #c0392b; color: #fff; margin-right: auto; }
   .cancel-btn { background: #7f8c8d; color: #fff; }
 
-    /* タッチ端末（スマホ・タブレット）では「新ウィンドウ」ボタンを隠す */
-  @media (pointer: coarse) {
-    #launchBtn { display: none; }
-  }
+  /* タッチ端末（スマホ・タブレット）では「新ウィンドウ」ボタンを隠す */
+  @media (pointer: coarse) { #launchBtn { display: none; } }
 
-  /* 横持ち（スマホなど高さの低い横長画面）:
-     上段に独立ボタン4つを横一列、その下にチャンネルボタンを4列で表示。
-     縦持ちには影響しません */
+  /* 横持ち: 上段に独立ボタン4つ、その下にカテゴリ切替、さらに下にチャンネルを4列 */
   @media (orientation: landscape) and (max-height: 540px) {
     html, body { height: auto; min-height: 100%; }
     body { align-items: flex-start; padding: 6px; }
-
-    .remote {
-      max-width: 100%;
-      height: calc(100vh - 12px);
-      height: calc(100dvh - 12px);
-      min-height: 230px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      grid-template-rows: auto auto 1fr;
-      grid-template-areas:
-        "lcd    tools"
-        "direct direct"
-        "keypad keypad";
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 28px;
-    }
-
+    .remote { max-width: 100%; height: calc(100vh - 12px); height: calc(100dvh - 12px); min-height: 230px; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto auto 1fr; grid-template-areas: "lcd tools" "direct direct" "cat cat" "keypad keypad"; gap: 8px; padding: 10px 14px; border-radius: 28px; }
     .ir-window, .brand { display: none; }
-
     .lcd { grid-area: lcd; min-height: 36px; padding: 5px 10px; font-size: 0.72rem; line-height: 1.3; }
     .tools { grid-area: tools; }
     .tool-btn { flex: none; padding: 0 14px; }
-
-    .direct-pad {
-      grid-area: direct;
-      grid-template-columns: repeat(4, 1fr);
-      padding: 6px;
-      gap: 6px;
-      border-radius: 14px;
-    }
+    .direct-pad { grid-area: direct; grid-template-columns: repeat(4, 1fr); padding: 6px; gap: 6px; border-radius: 14px; }
     .direct-key { min-height: 44px; padding: 5px 8px; }
-
-    .keypad {
-      grid-area: keypad;
-      grid-template-columns: repeat(4, 1fr);
-      align-content: start;
-      gap: 8px;
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
+    .cat-pad { grid-area: cat; }
+    .cat-key { padding: 6px 2px; }
+    .keypad { grid-area: keypad; grid-template-columns: repeat(4, 1fr); align-content: start; gap: 8px; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .key { min-height: 54px; padding: 6px 4px; border-radius: 14px; }
     .key-num { font-size: 1.2rem; }
     .key-name { font-size: 0.66rem; }
   }
-
 </style>
 </head>
 <body>
@@ -344,10 +115,13 @@
   <div id="lcd" class="lcd">ボタンを押すとチャンネルが開きます</div>
   <div class="brand">OTTCHANEL</div>
 
-  <!-- 2×2 独立カテゴリボタン -->
+  <!-- 2×2 独立ボタン -->
   <div id="directPad" class="direct-pad"></div>
 
-  <!-- 通常チャンネルキー -->
+  <!-- カテゴリ切替 -->
+  <div id="catPad" class="cat-pad"></div>
+
+  <!-- チャンネルキー -->
   <div id="keypad" class="keypad"></div>
 
   <div class="tools">
@@ -361,10 +135,11 @@
   <div class="modal-content">
     <h2>リモコン設定（独立ボタン・チャンネルの編集）</h2>
 
-    <div class="modal-section-title">■ 独立ボタン（2×2 カテゴリ別ショートカット）</div>
+    <div class="modal-section-title">■ 独立ボタン（2×2 ショートカット：見出し・表示名・URL）</div>
     <div id="directSettingsForm"></div>
 
-    <div class="modal-section-title">■ チャンネルボタン（1CH〜）</div>
+    <div class="modal-section-title">■ チャンネルボタン（カテゴリ別・1CH〜）</div>
+    <div id="setTabs" class="set-tabs"></div>
     <div id="settingsForm"></div>
     <button type="button" id="addChannelBtn" class="add-btn">＋ チャンネルを追加</button>
 
@@ -377,55 +152,58 @@
 </div>
 
 <script>
-  const STORAGE_KEY = "webTvChannels";
+  const STORAGE_KEY = "webTvChannels";              // 旧形式（移行用）
+  const CAT_STORAGE_KEY = "ottchanelCategories";    // カテゴリ別チャンネル
+  const CURRENT_CAT_KEY = "webTvCategory";
   const DIRECT_STORAGE_KEY = "webTvDirectButtons";
   const MODE_STORAGE_KEY = "webTvSingleTabMode";
   const SHARED_WINDOW_NAME = "webremote_shared_viewer";
   const DEFAULT_LCD = "ボタンを押すとチャンネルが開きます";
 
-  const DEFAULT_DIRECT_BUTTONS = [
-    {
-      id: "d_work",
-      category: "仕事・集中BGM",
-      cssClass: "cat-work",
-      name: "環境音ミックス",
-      url: "https://asoftmurmur.com/"
-    },
-    {
-      id: "d_sleep",
-      category: "睡眠・リラックス",
-      cssClass: "cat-sleep",
-      name: "雨音リラックス",
-      url: "https://rainymood.com/"
-    },
-    {
-      id: "d_sport",
-      category: "運動・気分転換",
-      cssClass: "cat-sport",
-      name: "Radio Garden",
-      url: "https://radio.garden/"
-    },
-    {
-      id: "d_cam",
-      category: "定点カメラ・風景",
-      cssClass: "cat-cam",
-      name: "EarthCam ライブ",
-      url: "https://www.earthcam.com/"
-    }
+  const CATEGORIES = [
+    { key: "tv", label: "TV" },
+    { key: "radio", label: "ラジオ" },
+    { key: "audio", label: "オーディオ" },
+    { key: "fav", label: "お気に入り" }
   ];
 
-  const DEFAULT_CHANNELS = [
-     { id: "c1", name: "YouTube", url: "https://www.youtube.com/" },
- 　　{ id: "c2", name: "Amazon Prime Video", url: "https://www.amazon.co.jp/gp/video/storefront" },
-　　 { id: "c3", name: "Netflix", url: "https://www.netflix.com/browse" },
-　　 { id: "c4", name: "TVer", url: "https://tver.jp/" },
-　　 { id: "c5", name: "NHKプラス", url: "https://plus.nhk.jp/" },
-　　 { id: "c6", name: "ABEMA", url: "https://abema.tv/" },
- 　　{ id: "c7", name: "ニコニコ動画", url: "https://www.nicovideo.jp/" },
-　　 { id: "c8", name: "radiko (ラジコ)", url: "https://radiko.jp/" },
-　　 { id: "c9", name: "らじる★らじる", url: "https://www.nhk.or.jp/radio/" },
-　　 { id: "c10", name: "Spotify Web", url: "https://open.spotify.com/" }
+  // 旧形式（1つのリスト）から移行する時の振り分け。IDではなくURLで判定する
+  function legacyCategory(url) {
+    try {
+      const u = new URL(url);
+      if (u.hostname.endsWith("radiko.jp")) return "radio";
+      if (u.hostname.endsWith("nhk.or.jp") && u.pathname.startsWith("/radio")) return "radio";
+      if (u.hostname.endsWith("spotify.com")) return "audio";
+    } catch (_) {}
+    return "tv";
+  }
+
+  const DEFAULT_DIRECT_BUTTONS = [
+    { id: "d_work", category: "仕事・集中BGM", cssClass: "cat-work", name: "環境音ミックス", url: "https://asoftmurmur.com/" },
+    { id: "d_sleep", category: "睡眠・リラックス", cssClass: "cat-sleep", name: "雨音リラックス", url: "https://rainymood.com/" },
+    { id: "d_sport", category: "運動・気分転換", cssClass: "cat-sport", name: "Radio Garden", url: "https://radio.garden/" },
+    { id: "d_cam", category: "定点カメラ・風景", cssClass: "cat-cam", name: "EarthCam ライブ", url: "https://www.earthcam.com/" }
   ];
+
+  const DEFAULT_CHANNELS_BY_CAT = {
+    tv: [
+      { id: "c1", name: "YouTube", url: "https://www.youtube.com/" },
+      { id: "c2", name: "Amazon Prime Video", url: "https://www.amazon.co.jp/gp/video/storefront" },
+      { id: "c3", name: "Netflix", url: "https://www.netflix.com/browse" },
+      { id: "c4", name: "TVer", url: "https://tver.jp/" },
+      { id: "c5", name: "NHKプラス", url: "https://plus.nhk.jp/" },
+      { id: "c6", name: "ABEMA", url: "https://abema.tv/" },
+      { id: "c7", name: "ニコニコ動画", url: "https://www.nicovideo.jp/" }
+    ],
+    radio: [
+      { id: "c8", name: "radiko (ラジコ)", url: "https://radiko.jp/" },
+      { id: "c9", name: "らじる★らじる", url: "https://www.nhk.or.jp/radio/" }
+    ],
+    audio: [
+      { id: "c10", name: "Spotify Web", url: "https://open.spotify.com/" }
+    ],
+    fav: []
+  };
 
   function cleanUrl(value) {
     let v = String(value || "").trim();
@@ -453,6 +231,38 @@
     });
   }
 
+  function defaultByCat() {
+    const out = {};
+    CATEGORIES.forEach((c) => { out[c.key] = normalizeChannels(DEFAULT_CHANNELS_BY_CAT[c.key]); });
+    return out;
+  }
+
+  function loadChannelsByCat() {
+    try {
+      const s = JSON.parse(localStorage.getItem(CAT_STORAGE_KEY));
+      if (s && typeof s === "object" && !Array.isArray(s)) {
+        const out = {};
+        CATEGORIES.forEach((c) => { out[c.key] = normalizeChannels(Array.isArray(s[c.key]) ? s[c.key] : []); });
+        return out;
+      }
+    } catch (_) {}
+    // 旧形式（1つのリスト）からの移行
+    try {
+      const old = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (Array.isArray(old) && old.length) {
+        const out = { tv: [], radio: [], audio: [], fav: [] };
+        normalizeChannels(old).forEach((c) => { out[legacyCategory(c.url)].push(c); });
+        return out;
+      }
+    } catch (_) {}
+    return defaultByCat();
+  }
+
+  function loadCurrentCat() {
+    const s = localStorage.getItem(CURRENT_CAT_KEY);
+    return CATEGORIES.some((c) => c.key === s) ? s : "tv";
+  }
+
   function loadSingleTabMode() {
     const saved = localStorage.getItem(MODE_STORAGE_KEY);
     return saved === null ? true : saved === "true";
@@ -464,22 +274,14 @@
       if (Array.isArray(saved) && saved.length === DEFAULT_DIRECT_BUTTONS.length) {
         return DEFAULT_DIRECT_BUTTONS.map((def, idx) => ({
           id: def.id,
-          category: def.category,
           cssClass: def.cssClass,
+          category: (saved[idx] && saved[idx].category) ? String(saved[idx].category) : def.category,
           name: (saved[idx] && saved[idx].name) ? String(saved[idx].name) : def.name,
           url: saved[idx] && "url" in saved[idx] ? cleanUrl(saved[idx].url) : def.url
         }));
       }
     } catch (_) {}
     return DEFAULT_DIRECT_BUTTONS.map((d) => ({ ...d }));
-  }
-
-  function loadChannels() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (Array.isArray(saved) && saved.length) return normalizeChannels(saved);
-    } catch (_) {}
-    return normalizeChannels(DEFAULT_CHANNELS);
   }
 
   function escapeHtml(str) {
@@ -490,17 +292,22 @@
 
   let isSingleTabMode = loadSingleTabMode();
   let directButtons = loadDirectButtons();
-  let channels = loadChannels();
+  let channelsByCat = loadChannelsByCat();
+  let currentCat = loadCurrentCat();
   let currentId = null;
   let sharedTab = { w: null, activeId: null, at: 0, severed: false };
   const openedTabs = {};
 
+  function getChannels() { return channelsByCat[currentCat] || []; }
+
   const directPad = document.getElementById("directPad");
+  const catPad = document.getElementById("catPad");
   const keypad = document.getElementById("keypad");
   const lcd = document.getElementById("lcd");
   const modeBtn = document.getElementById("modeBtn");
   const settingsModal = document.getElementById("settingsModal");
   const directSettingsForm = document.getElementById("directSettingsForm");
+  const setTabs = document.getElementById("setTabs");
   const settingsForm = document.getElementById("settingsForm");
 
   function setLcd(text) { lcd.textContent = text; }
@@ -554,9 +361,7 @@
     }
 
     let w = null;
-    try {
-      w = window.open(url, SHARED_WINDOW_NAME);
-    } catch (_) {}
+    try { w = window.open(url, SHARED_WINDOW_NAME); } catch (_) {}
 
     if (!w) {
       setLcd("ポップアップがブロックされました\n許可してください");
@@ -565,12 +370,7 @@
     }
 
     const isSwitch = sharedTab.activeId !== null && sharedTab.activeId !== id && isSharedTabAlive();
-    sharedTab = {
-      w,
-      activeId: id,
-      at: Date.now(),
-      severed: false
-    };
+    sharedTab = { w, activeId: id, at: Date.now(), severed: false };
     try { w.focus(); } catch (_) {}
     setLcd(isSwitch ? `${label}\n共有タブを切り替えました` : `${label}\n共有タブで開きました`);
     renderAllKeys();
@@ -590,9 +390,7 @@
     }
 
     let w = null;
-    try {
-      w = window.open(url, "webremote_" + id);
-    } catch (_) {}
+    try { w = window.open(url, "webremote_" + id); } catch (_) {}
 
     if (!w) {
       setLcd("ポップアップがブロックされました\n許可してください");
@@ -615,11 +413,8 @@
       renderAllKeys();
       return;
     }
-    if (isSingleTabMode) {
-      openInSharedTab(id, label, url);
-    } else {
-      openInIndividualTab(id, label, url);
-    }
+    if (isSingleTabMode) openInSharedTab(id, label, url);
+    else openInIndividualTab(id, label, url);
   }
 
   modeBtn.onclick = () => {
@@ -651,9 +446,33 @@
     });
   }
 
+  function renderCats() {
+    catPad.innerHTML = "";
+    CATEGORIES.forEach((c) => {
+      const btn = document.createElement("button");
+      btn.className = "cat-key" + (c.key === currentCat ? " active" : "");
+      btn.textContent = c.label;
+      btn.onclick = () => {
+        currentCat = c.key;
+        localStorage.setItem(CURRENT_CAT_KEY, currentCat);
+        renderAllKeys();
+        setLcd(`${c.label}\n${getChannels().length}チャンネル`);
+      };
+      catPad.appendChild(btn);
+    });
+  }
+
   function renderKeys() {
     keypad.innerHTML = "";
-    channels.forEach((item, index) => {
+    const list = getChannels();
+    if (!list.length) {
+      const note = document.createElement("div");
+      note.className = "empty-note";
+      note.textContent = "このカテゴリにはまだチャンネルがありません。\n⚙ 設定から追加できます";
+      keypad.appendChild(note);
+      return;
+    }
+    list.forEach((item, index) => {
       const btn = document.createElement("button");
       btn.className = "key"
         + (item.id === currentId ? " last" : "")
@@ -672,6 +491,7 @@
 
   function renderAllKeys() {
     renderDirectKeys();
+    renderCats();
     renderKeys();
   }
 
@@ -680,9 +500,7 @@
     renderAllKeys();
     requestAnimationFrame(() => {
       const remoteEl = document.querySelector(".remote");
-      if (remoteEl) {
-        void remoteEl.offsetHeight;
-      }
+      if (remoteEl) void remoteEl.offsetHeight;
       renderAllKeys();
     });
   }
@@ -690,20 +508,19 @@
   window.addEventListener("pageshow", refreshOnResume);
   window.addEventListener("focus", refreshOnResume);
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      refreshOnResume();
-    }
+    if (document.visibilityState === "visible") refreshOnResume();
   });
 
   function openChannel(index) {
-    const item = channels[index];
+    const item = getChannels()[index];
+    if (!item) return;
     openTargetTab(item.id, `${index + 1}CH ${item.name}`, item.url);
   }
 
   window.addEventListener("keydown", (e) => {
     if (settingsModal.style.display === "flex") return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key >= "1" && e.key <= "9" && parseInt(e.key, 10) <= channels.length) {
+    if (e.key >= "1" && e.key <= "9" && parseInt(e.key, 10) <= getChannels().length) {
       openChannel(parseInt(e.key, 10) - 1);
     }
   });
@@ -712,8 +529,9 @@
     directPad.querySelectorAll(".direct-key").forEach((btn, i) => {
       if (directButtons[i]) applyLamp(btn, directButtons[i].id);
     });
+    const list = getChannels();
     keypad.querySelectorAll(".key").forEach((btn, i) => {
-      if (channels[i]) applyLamp(btn, channels[i].id);
+      if (list[i]) applyLamp(btn, list[i].id);
     });
   }, 1500);
 
@@ -730,18 +548,21 @@
 
   // ---- 設定画面 ----
   let directDraft = [];
-  let draft = [];
+  let draftByCat = {};
+  let settingsCat = "tv";
 
   function readDraft() {
     directSettingsForm.querySelectorAll(".setting-row").forEach((row, i) => {
       if (!directDraft[i]) return;
+      directDraft[i].category = row.querySelector(".cat-input").value;
       directDraft[i].name = row.querySelector(".name-input").value;
       directDraft[i].url = row.querySelector(".url-input").value;
     });
+    const list = draftByCat[settingsCat] || [];
     settingsForm.querySelectorAll(".setting-row").forEach((row, i) => {
-      if (!draft[i]) return;
-      draft[i].name = row.querySelector(".name-input").value;
-      draft[i].url = row.querySelector(".url-input").value;
+      if (!list[i]) return;
+      list[i].name = row.querySelector(".name-input").value;
+      list[i].url = row.querySelector(".url-input").value;
     });
   }
 
@@ -751,26 +572,40 @@
       const row = document.createElement("div");
       row.className = "setting-row";
       row.innerHTML = `
-        <span class="cat-badge">${escapeHtml(item.category)}</span>
+        <input type="text" class="cat-input" value="${escapeHtml(item.category)}" placeholder="見出し（カテゴリ名）">
         <input type="text" class="name-input" value="${escapeHtml(item.name)}" placeholder="ボタン表示名">
         <input type="text" class="url-input" value="${escapeHtml(item.url)}" placeholder="https://...">
       `;
       directSettingsForm.appendChild(row);
     });
 
+    setTabs.innerHTML = "";
+    CATEGORIES.forEach((c) => {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = "set-tab" + (c.key === settingsCat ? " active" : "");
+      tab.textContent = `${c.label}（${draftByCat[c.key].length}）`;
+      tab.onclick = () => {
+        readDraft();
+        settingsCat = c.key;
+        renderSettings();
+      };
+      setTabs.appendChild(tab);
+    });
+
     settingsForm.innerHTML = "";
-    draft.forEach((item, idx) => {
+    draftByCat[settingsCat].forEach((item, idx) => {
       const row = document.createElement("div");
       row.className = "setting-row";
       row.innerHTML = `
         <span>${idx + 1}CH</span>
         <input type="text" class="name-input" value="${escapeHtml(item.name)}" placeholder="チャンネル名">
-        <button type="button" class="del-btn" title="このチャンネルを削除"${draft.length <= 1 ? " disabled" : ""}>削除</button>
+        <button type="button" class="del-btn" title="このチャンネルを削除">削除</button>
         <input type="text" class="url-input" value="${escapeHtml(item.url)}" placeholder="https://...">
       `;
       row.querySelector(".del-btn").onclick = () => {
         readDraft();
-        draft.splice(idx, 1);
+        draftByCat[settingsCat].splice(idx, 1);
         renderSettings();
       };
       settingsForm.appendChild(row);
@@ -779,14 +614,16 @@
 
   document.getElementById("openSettingsBtn").onclick = () => {
     directDraft = directButtons.map((d) => ({ ...d }));
-    draft = channels.map((c) => ({ ...c }));
+    draftByCat = {};
+    CATEGORIES.forEach((c) => { draftByCat[c.key] = channelsByCat[c.key].map((x) => ({ ...x })); });
+    settingsCat = currentCat;
     renderSettings();
     settingsModal.style.display = "flex";
   };
 
   document.getElementById("addChannelBtn").onclick = () => {
     readDraft();
-    draft.push({ id: newId(), name: "", url: "" });
+    draftByCat[settingsCat].push({ id: newId(), name: "", url: "" });
     renderSettings();
     const inputs = settingsForm.querySelectorAll(".name-input");
     const last = inputs[inputs.length - 1];
@@ -798,33 +635,31 @@
 
   document.getElementById("saveSettingsBtn").onclick = () => {
     readDraft();
-    const nextDirect = directDraft.map((d, idx) => ({
+    directButtons = directDraft.map((d, idx) => ({
       ...DEFAULT_DIRECT_BUTTONS[idx],
+      category: d.category.trim() || DEFAULT_DIRECT_BUTTONS[idx].category,
       name: d.name.trim() || DEFAULT_DIRECT_BUTTONS[idx].name,
       url: cleanUrl(d.url)
     }));
-
-    const next = draft
-      .filter((c) => c.name.trim() || c.url.trim())
-      .map((c, i) => ({ id: c.id, name: c.name.trim() || `${i + 1}CH`, url: cleanUrl(c.url) }));
-    if (!next.length) {
-      alert("チャンネルが1つもありません。1つ以上入力してください。");
-      return;
-    }
-
-    directButtons = nextDirect;
-    channels = next;
+    const next = {};
+    CATEGORIES.forEach((c) => {
+      next[c.key] = draftByCat[c.key]
+        .filter((x) => x.name.trim() || x.url.trim())
+        .map((x, i) => ({ id: x.id, name: x.name.trim() || `${i + 1}CH`, url: cleanUrl(x.url) }));
+    });
+    channelsByCat = next;
     localStorage.setItem(DIRECT_STORAGE_KEY, JSON.stringify(directButtons));
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(channels));
+    localStorage.setItem(CAT_STORAGE_KEY, JSON.stringify(channelsByCat));
     settingsModal.style.display = "none";
     renderAllKeys();
   };
 
   document.getElementById("resetBtn").onclick = () => {
-    if (confirm("独立ボタンとチャンネル設定をすべて初期状態に戻しますか？")) {
+    if (confirm("独立ボタンとカテゴリ別チャンネルの設定をすべて初期状態に戻しますか？")) {
       directButtons = DEFAULT_DIRECT_BUTTONS.map((d) => ({ ...d }));
-      channels = normalizeChannels(DEFAULT_CHANNELS);
+      channelsByCat = defaultByCat();
       localStorage.removeItem(DIRECT_STORAGE_KEY);
+      localStorage.removeItem(CAT_STORAGE_KEY);
       localStorage.removeItem(STORAGE_KEY);
       currentId = null;
       settingsModal.style.display = "none";
